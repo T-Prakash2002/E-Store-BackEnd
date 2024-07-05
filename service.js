@@ -80,10 +80,14 @@ const handleLogin = async (req, res) => {
                 });
                 return
             } else {
-                res.send({
+                res.status(400).json({
                     message: 'Password is not matched',
                     data: null
                 });
+                // res.send({
+                //     message: 'Password is not matched',
+                //     data: null
+                // });
                 return;
             }
 
