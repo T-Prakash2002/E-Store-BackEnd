@@ -1,6 +1,11 @@
 const bcryptjs = require('bcryptjs');
-const { userSchemaModel } = require('./schema');
+const { 
+    userSchemaModel,
+    productSchemaModel 
+    } = require('./schema');
 const jwt = require('jsonwebtoken');
+
+
 
 const handleRegister = async (req, res) => {
     const { name, email, password } = req.body;
@@ -89,7 +94,16 @@ const handleLogin = async (req, res) => {
         }
     }
 }
+
+const handleProducts= async (req, res) => {
+    const result = await productSchemaModel.find({});
+    res.send(result);
+}
+
+
 module.exports = {
     handleRegister,
     handleLogin,
+    handleProducts,
+
 }
