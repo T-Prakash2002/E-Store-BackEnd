@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 const { 
   handleRegister,
    handleLogin,
-   handleProducts,
+   handleAddToCart,
    } = require('./service');
 
 
@@ -33,8 +33,8 @@ app.get('/login', (req, res) => {
   handleLogin(req, res);
 });
 
-app.get('/FetchProducts', (req, res) => {
-  handleProducts(req,res);
+app.post('/cart/add', (req, res) => {
+  handleAddToCart(req, res);
 });
 
 

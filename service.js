@@ -1,7 +1,8 @@
 const bcryptjs = require('bcryptjs');
 const { 
     userSchemaModel,
-    productSchemaModel 
+    productSchemaModel,
+    cartSchemaModel,
     } = require('./schema');
 const jwt = require('jsonwebtoken');
 
@@ -99,15 +100,54 @@ const handleLogin = async (req, res) => {
     }
 }
 
-const handleProducts= async (req, res) => {
-    const result = await productSchemaModel.find({});
-    res.send(result);
+const handleAddToCart = async (req, res) => {
+    const { user_email, product_id, quantity } = req.body;
+
+    const confirm = await cartSchemaModel.findOne({ email: user_email, productId: product_id });
+
+    if (confirm) {
+        if(confirm.quantity == quantity){
+            res.send({
+                message: 'Product is already in cart',
+                data: null
+            });
+            return;
+        }
+        const result = await cartSchemaModel.updateOne({email: user_email, productId: product_id},
+         {$set: {quantity: quantity}});
+
+        if (result) {
+            res.send({ 
+                message: 'Product Quantity is updated',
+                data: result
+            });
+        }else{
+            res.send({
+                message: 'Product is not updated',
+                data: null
+            });
+        }
+    }else{
+        const result = await cartSchemaModel.create({email: user_email, productId: product_id, quantity});
+
+        if (result) {
+            res.send({
+                message: 'Product is added to cart',
+                data: result
+            });
+        }else{
+            res.send({
+                message: 'Product is not added to cart',
+                data: null
+            });
+        }
 }
+}
+
 
 
 module.exports = {
     handleRegister,
     handleLogin,
-    handleProducts,
-
+    handleAddToCart,
 }

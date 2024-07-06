@@ -14,34 +14,6 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-// const productSchema = new mongoose.Schema({
-//     url: {
-//         type: String,
-//     },
-//     title: {
-//         type: String,
-//     },
-//     product_details: {
-//         type: String,
-//     },
-//     brand:{
-//         type:String,
-//     },
-//     price: {
-//         type: Number,
-//     },
-//     images_list: {
-//         type: Array,
-//     },
-//     breadcrumbs: {
-//         type: String,
-//     },
-//     features:{
-//         type: Array,
-//     }
-// });
-
-
 const imageSchema = new mongoose.Schema({
   url: String,
   width: String,
@@ -102,13 +74,20 @@ const productSchema = new mongoose.Schema({
   salesrank: Number
 });
 
+const cartSchema = new mongoose.Schema({
+  email: String,
+  productId: String,
+  quantity: Number
+});
 
 
 const userSchemaModel = mongoose.model('users', userSchema);
 const productSchemaModel = mongoose.model('Products', productSchema);
+const cartSchemaModel = mongoose.model('cart', cartSchema);
 
 module.exports = {
     userSchemaModel,
     productSchemaModel,
+    cartSchemaModel,
 };
 
