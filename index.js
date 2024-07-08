@@ -4,12 +4,15 @@ const {connectDB} = require('./db');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv').config();
 
 
 app.use(cors());
 app.use(bodyParser.json());
 
-const { 
+const {
+  verifyUser,
   handleRegister,
    handleLogin,
    handleAddToCart,
@@ -22,8 +25,43 @@ const {
 
 
 
+const auth=(req,res,next)=>{
+  
+  console.log(req.path);
+  if(req.path == '/login' || req.path == '/register'){
+    next();
+  }else{
+    const token = req.headers.authorization;
+
+    if(token){
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      verifyUser(decoded.name,decoded.email).then(response => {
+      if (response) {
+        next();
+      } else {
+        res.send({
+          message: 'Invalid Credentials',
+        });
+
+      }
+    });
+
+
+
+    }else{
+      res.send({
+        message: 'No token provided',
+      });
+    }
+ 
+  }
+}
+app.use(auth)
 
 connectDB();
+
 
 app.get('/', (req, res) => {
   res.send('Server is running!');

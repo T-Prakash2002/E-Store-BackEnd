@@ -9,6 +9,16 @@ const jwt = require('jsonwebtoken');
 
 
 
+const verifyUser = async (name,email)=>{
+    const user = await userSchemaModel.findOne({ name , email });
+
+    if(user){
+        return true
+    }
+    return false
+
+}
+
 const handleRegister = async (req, res) => {
     const { name, email, password } = req.body;
     if (name && email && password) {
@@ -291,6 +301,7 @@ const handleRemoveFromWishlist = async (req, res) => {
 
 
 module.exports = {
+    verifyUser,
     handleRegister,
     handleLogin,
     handleAddToCart,
