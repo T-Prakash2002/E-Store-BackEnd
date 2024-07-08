@@ -13,6 +13,11 @@ const {
   handleRegister,
    handleLogin,
    handleAddToCart,
+   handleGetCart,
+   handleRemoveFromCart,
+   handleAddToWishlist,
+   handleGetWishlist,
+   handleRemoveFromWishlist,
    } = require('./service');
 
 
@@ -36,6 +41,27 @@ app.get('/login', (req, res) => {
 app.post('/cart/add', (req, res) => {
   handleAddToCart(req, res);
 });
+
+app.get('/cart/get', (req, res) => {
+  handleGetCart(req, res);
+});
+
+app.delete('/cart/remove', (req, res) => {
+  handleRemoveFromCart(req, res);
+});
+
+app.post(`/wishlist/add`, (req, res) => {
+  handleAddToWishlist(req, res);
+});
+
+app.get('/wishlist/get', (req, res) => {
+  handleGetWishlist(req, res);
+});
+
+app.delete('/wishlist/remove', (req, res) => {
+  handleRemoveFromWishlist(req, res);
+});
+
 
 
 app.listen(4000, () => {

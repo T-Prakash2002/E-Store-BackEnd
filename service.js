@@ -3,6 +3,7 @@ const {
     userSchemaModel,
     productSchemaModel,
     cartSchemaModel,
+    wishlistSchemaModel,
     } = require('./schema');
 const jwt = require('jsonwebtoken');
 
@@ -100,10 +101,50 @@ const handleLogin = async (req, res) => {
     }
 }
 
-const handleAddToCart = async (req, res) => {
-    const { user_email, product_id, quantity } = req.body;
+const handleGetCart = async (req, res) => {
+    const {user_email } = req.query;
 
-    const confirm = await cartSchemaModel.findOne({ email: user_email, productId: product_id });
+    const cart = await cartSchemaModel.find({ email:user_email });
+
+    const detailCarts=[]
+
+    if (cart && cart.length > 0) {
+        
+        for(let i=0;i<cart.length;i++){
+            const product = await productSchemaModel.findOne({ _id: cart[i].productId });
+            if(product.price){
+                product.price = product.price
+            }else{
+                product.price = 699
+            }
+            detailCarts.push({
+                productId: product._id,
+                title: product.title,
+                price: product.price,
+                quantity: cart[i].quantity,
+                image: product.images,
+            })
+        }
+
+        res.send({
+            message: 'Cart is retrieved successfully',
+            data: detailCarts,
+        });
+        return;
+
+    }else{
+        res.send({
+            message: 'No cart found',
+            data: null
+        });
+    }
+
+}
+
+const handleAddToCart = async (req, res) => {
+    const {email, product_id, quantity } = req.body;
+
+    const confirm = await cartSchemaModel.findOne({ email:email, productId: product_id });
 
     if (confirm) {
         if(confirm.quantity == quantity){
@@ -113,7 +154,7 @@ const handleAddToCart = async (req, res) => {
             });
             return;
         }
-        const result = await cartSchemaModel.updateOne({email: user_email, productId: product_id},
+        const result = await cartSchemaModel.updateOne({email:email, productId: product_id},
          {$set: {quantity: quantity}});
 
         if (result) {
@@ -128,7 +169,7 @@ const handleAddToCart = async (req, res) => {
             });
         }
     }else{
-        const result = await cartSchemaModel.create({email: user_email, productId: product_id, quantity});
+        const result = await cartSchemaModel.create({email:email, productId: product_id, quantity});
 
         if (result) {
             res.send({
@@ -144,10 +185,118 @@ const handleAddToCart = async (req, res) => {
 }
 }
 
+const handleRemoveFromCart = async (req, res) => {
+  const { product_id,email } = req.query;
+
+  const result = await cartSchemaModel.deleteOne({email:email, productId: product_id});
+
+  if (result) {
+      res.send({
+          message: 'Product is removed from cart',
+          data: result
+      });
+  }else{
+      res.send({
+          message: 'Product is not removed from cart',
+          data: null
+      });
+  }
+}
+
+const handleAddToWishlist = async (req, res) => {
+  const { product_id,email } = req.body;
+
+    const confirm = await wishlistSchemaModel.findOne({ email:email, productId: product_id });
+
+    if (confirm) {
+        res.send({
+            message: 'Product is already in wishlist',
+            data: null
+        });
+        return;
+    }
+  
+
+  const result = await wishlistSchemaModel.create({email:email, productId: product_id});
+
+  if (result) {
+      res.send({
+          message: 'Product is added to wishlist',
+          data: result
+      });
+  }else{
+      res.send({
+          message: 'Product is not added to wishlist',
+          data: null
+      });
+  }
+}
+
+const handleGetWishlist = async (req, res) => {
+  const {user_email} = req.query;
+
+  const wishlist = await wishlistSchemaModel.find({ email:user_email });
+
+  const detailWishlists=[]
+
+  if (wishlist && wishlist.length > 0) {
+    
+    for(let i=0;i<wishlist.length;i++){
+      const product = await productSchemaModel.findOne({ _id: wishlist[i].productId });
+      if(product.price){
+        product.price = product.price
+      }else{
+        product.price = 699
+      }
+      detailWishlists.push({
+        productId: product._id,
+        title: product.title,
+        price: product.price,
+        image: product.images,
+      })
+    }
+
+    res.send({
+      message: 'Wishlist is retrieved successfully',
+      data: detailWishlists,
+    });
+    return;
+
+  }else{
+    res.send({
+      message: 'No wishlist found',
+      data: null
+    });
+  }
+
+}
+
+const handleRemoveFromWishlist = async (req, res) => {
+  const { product_id,email } = req.query;
+
+  const result = await wishlistSchemaModel.deleteOne({email:email, productId: product_id});
+
+  if (result) {
+      res.send({
+          message: 'Product is removed from wishlist',
+          data: result
+      });
+  }else{
+      res.send({
+          message: 'Product is not removed from wishlist',
+          data: null
+      });
+  }
+}
 
 
 module.exports = {
     handleRegister,
     handleLogin,
     handleAddToCart,
+    handleGetCart,
+    handleRemoveFromCart,
+    handleAddToWishlist,
+    handleRemoveFromWishlist,
+    handleGetWishlist
 }

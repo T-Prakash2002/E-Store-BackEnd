@@ -80,14 +80,21 @@ const cartSchema = new mongoose.Schema({
   quantity: Number
 });
 
+const wishlistSchema = new mongoose.Schema({
+  email: String,
+  productId: String,
+});
+
 
 const userSchemaModel = mongoose.model('users', userSchema);
 const productSchemaModel = mongoose.model('Products', productSchema);
 const cartSchemaModel = mongoose.model('cart', cartSchema);
+const wishlistSchemaModel = mongoose.model('wishlist', wishlistSchema);
 
 module.exports = {
     userSchemaModel,
     productSchemaModel,
     cartSchemaModel,
+    wishlistSchemaModel,
 };
 
