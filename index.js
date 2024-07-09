@@ -27,7 +27,6 @@ const {
 
 const auth=(req,res,next)=>{
   
-  console.log(req.path);
   if(req.path == '/login' || req.path == '/register'){
     next();
   }else{
@@ -47,9 +46,6 @@ const auth=(req,res,next)=>{
 
       }
     });
-
-
-
     }else{
       res.send({
         message: 'No token provided',
